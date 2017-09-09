@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
@@ -40,13 +41,22 @@ public class Practice13CameraRotateHittingFaceView extends View {
 
     {
         bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.maps);
+        /*得到放大版的图像*/
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() * 2, bitmap.getHeight() * 2, true);
         bitmap.recycle();
         bitmap = scaledBitmap;
 
         animator.setDuration(5000);
+        /*匀速*/
         animator.setInterpolator(new LinearInterpolator());
+        /*无限循环*/
         animator.setRepeatCount(ValueAnimator.INFINITE);
+        animator.setRepeatMode(ValueAnimator.REVERSE);
+
+        final DisplayMetrics metrics = getResources().getDisplayMetrics();
+        /*相机距离跟随系统像素密度计算*/
+        final float newZ = metrics.density * 6;
+        camera.setLocation(0, 0, newZ);
     }
 
     @Override
@@ -78,7 +88,7 @@ public class Practice13CameraRotateHittingFaceView extends View {
 
         camera.save();
         matrix.reset();
-        camera.rotateX(degree);
+        camera.rotateX(-degree);
         camera.getMatrix(matrix);
         camera.restore();
         matrix.preTranslate(-centerX, -centerY);
